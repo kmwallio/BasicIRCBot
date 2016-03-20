@@ -28,9 +28,9 @@ $brain.add(&is-a, "remember that jacob is a man", "jacob", "a man");
 sub what-was(@args, $context) {
   my $key = @args[0];
   if (%memory{$key}:exists) {
-    my @possible = %memory{$key};
-    my $isa = (@possible.elems == 1) ?? " is " !! " are ";
-    $context.msg($context.who<nick> ~ ": " ~ @possible.join(', ') ~ $isa ~ $key ~ ".");
+    my $possible = %memory{$key}.join(', ');
+    my $isa = (%memory{$key}.elems == 1) ?? " is " !! " are ";
+    $context.msg($context.who<nick> ~ ": " ~ $possible ~ $isa ~ $key ~ ".");
   } else {
     $context.msg($context.who<nick> ~ ": I got nothing on that.");
   }
@@ -45,13 +45,8 @@ $brain.add(&what-was, "what was down", "down");
 sub key-in(@args, $context) {
   my $key = @args[1];
   my $value = @args[0];
-  if (%kv{$key}:exists) {
-    my @current = %kv{$key};
-    @current.push($value);
-    %kv{$key} = @current;
-  } else {
-    %kv{$key} = ($value,);
-  }
+  %kv.push: ($key => $value);
+  $context.msg("Got: " ~ $value);
 }
 
 $brain.add(&key-in, "push lizards on reptiles", "lizards", "reptiles");
@@ -62,9 +57,7 @@ $brain.add(&key-in, "put dogs in mammals", "dogs", "mammals");
 sub pop-out(@args, $context) {
   my $key = @args[0];
   if (%kv{$key}:exists) {
-    my @current = %kv{$key};
-    my $val = @current.pop();
-    %kv{$key} = @current;
+    my $val = %kv{$key}.pop();
     $val = ($val) ?? $val !! "Nil";
     $context.msg($context.who<nick> ~ ": " ~ $val);
   } else {
@@ -98,7 +91,7 @@ $brain.add(&wwjs, "what's something miles says", "miles");
 $brain.add(&wwjs, "what's something josh would say", "josh");
 
 sub thanks($context) {
-  my @responses = "you're welcome", "no thank you", "don't mention it", "it was nothing";
+  my @responses = "you're welcome", "no, thank you", "don't mention it", "it was nothing";
   $context.msg($context.who<nick> ~ ": " ~ @responses.pick(1));
 }
 
