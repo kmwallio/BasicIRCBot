@@ -45,6 +45,8 @@ $brain.add(&what-was, "who are weird", "weird");
 $brain.add(&what-was, "who was smart", "smart");
 $brain.add(&what-was, "what's sideways", "sideways");
 $brain.add(&what-was, "what was down", "down");
+$brain.add(&what-was, "what are feelings", "feelings");
+$brain.add(&what-was, "what is blue", "blue");
 
 sub key-in(@args, $context) {
   my $key = @args[1];
