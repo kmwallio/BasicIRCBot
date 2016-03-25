@@ -5,15 +5,18 @@ use Net::IRC::Bot;
 use Net::IRC::Modules::Autoident;
 use Text::Markov;
 use Lingua::Conjunction;
+use WebService::Food2Fork;
 
 my $nick = 'BottyBot';
 my $channel = '#hashtag';
 my $server = 'irc.freenode.net';
+my $food2fork-api = 'api-access-to-yum';
 
 my $brain = Intent.new(True);
 my %memory;
 my %kv;
 my %observations;
+my $yum = Food2Fork.new(:key($food2fork-api));
 
 sub is-a(@args, $context) {
   my $key = @args[1];
@@ -100,8 +103,34 @@ $brain.add(&thanks, "thanks");
 $brain.add(&thanks, "thank you");
 $brain.add(&thanks, "thank you very much");
 
+sub food-search(@args, $context) {
+  unless (@args[0] eq "") {
+    my %goodies = $yum.search(@args[0]);
+    if (%goodies<count> == 0) {
+      $context.msg($context.who<nick> ~ ": I couldn't find any recipes for " ~ @args[0]);
+    } else {
+      my @recipes = %goodies<recipes>;
+      $context.msg($context.who<nick> ~ ": I found:");
+      my $limit = min(2, %goodies<count>);
+      for [0..$limit] -> $r {
+        my %recipe = %goodies<recipes>[$r];
+        $context.msg(%recipe<title>);
+        $context.msg("From: " ~ %recipe<source_url>);
+      }
+    }
+  }
+}
+
+$brain.add(&food-search, "how do i cook chicken", "chicken");
+$brain.add(&food-search, "do you have a recipe for pizza", "pizza");
+$brain.add(&food-search, "find corn dog recipe", "corn dog");
+$brain.add(&food-search, "please find a burger recipe", "burger");
+$brain.add(&food-search, "how do i cook humans please", "humans");
+$brain.add(&food-search, "tell me how to cook cat", "cat");
+$brain.add(&food-search, "how do i prepare food", "food");
+
 sub help($context) {
-  my @response = "Help:", "roll - roll a 20 sided die", "remember <value> is <key> - store information", "what is <key> - get values stored in key", "push <value> on <key> - push on stack", "pop <key> - pop from stack", "what would <nick> say - random sentence from previoud responses";
+  my @response = "Help:", "roll - roll a 20 sided die", "remember <value> is <key> - store information", "what is <key> - get values stored in key", "push <value> on <key> - push on stack", "pop <key> - pop from stack", "what would <nick> say - random sentence from previoud responses", "how do i cook <food> - find recipes for food";
   for @response -> $line {
     $context.msg($line);
   }
@@ -112,7 +141,11 @@ $brain.add(&help, "what can you do");
 $brain.add(&help, "your capabilities");
 $brain.add(&help, "are you a bot");
 
+say 'Learning...';
+
 $brain.learn();
+
+say 'Connecting...';
 
 class BasicBot {
   multi method said ($e) {
