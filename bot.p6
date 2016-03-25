@@ -128,6 +128,9 @@ $brain.add(&food-search, "please find a burger recipe", "burger");
 $brain.add(&food-search, "how do i cook humans please", "humans");
 $brain.add(&food-search, "tell me how to cook cat", "cat");
 $brain.add(&food-search, "how do i prepare food", "food");
+$brain.add(&food-search, "how do i make ice cream", "ice cream");
+$brain.add(&food-search, "i want to cook dogs", "dogs");
+$brain.add(&food-search, "i want to make kimchi", "kimchi");
 
 sub help($context) {
   my @response = "Help:", "roll - roll a 20 sided die", "remember <value> is <key> - store information", "what is <key> - get values stored in key", "push <value> on <key> - push on stack", "pop <key> - pop from stack", "what would <nick> say - random sentence from previoud responses", "how do i cook <food> - find recipes for food";
