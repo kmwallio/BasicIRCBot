@@ -19,3 +19,4 @@ For the push command, we needed a cue word between the key and value.  The curre
 * [Net::IRC::Bot](https://github.com/TiMBuS/Net--IRC)
 * [Text::Markov](https://github.com/bbkr/text_markov)
 * [Acme::Skynet](https://github.com/kmwallio/Acme-Skynet)
+* [Lingua::Conjunction](https://github.com/zoffixznet/perl6-Lingua-Conjunction)

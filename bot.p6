@@ -4,12 +4,13 @@ use Acme::Skynet;
 use Net::IRC::Bot;
 use Net::IRC::Modules::Autoident;
 use Text::Markov;
+use Lingua::Conjunction;
 
 my $nick = 'BottyBot';
 my $channel = '#hashtag';
 my $server = 'irc.freenode.net';
 
-my $brain = Intent.new();
+my $brain = Intent.new(True);
 my %memory;
 my %kv;
 my %observations;
@@ -28,7 +29,7 @@ $brain.add(&is-a, "remember that jacob is a man", "jacob", "a man");
 sub what-was(@args, $context) {
   my $key = @args[0];
   if (%memory{$key}:exists) {
-    my $possible = %memory{$key}.join(', ');
+    my $possible = conjunction(%memory{$key});
     my $isa = (%memory{$key}.elems == 1) ?? " is " !! " are ";
     $context.msg($context.who<nick> ~ ": " ~ $possible ~ $isa ~ $key ~ ".");
   } else {
@@ -98,6 +99,18 @@ sub thanks($context) {
 $brain.add(&thanks, "thanks");
 $brain.add(&thanks, "thank you");
 $brain.add(&thanks, "thank you very much");
+
+sub help($context) {
+  my @response = "Help:", "roll - roll a 20 sided die", "remember <value> is <key> - store information", "what is <key> - get values stored in key", "push <value> on <key> - push on stack", "pop <key> - pop from stack", "what would <nick> say - random sentence from previoud responses";
+  for @response -> $line {
+    $context.msg($line);
+  }
+}
+
+$brain.add(&help, "help");
+$brain.add(&help, "what can you do");
+$brain.add(&help, "your capabilities");
+$brain.add(&help, "are you a bot");
 
 $brain.learn();
 
